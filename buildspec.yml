@@ -3,28 +3,38 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.9
+      python: 3.8
     commands:
+      # Install dependencies for your build
+      - echo Installing dependencies...
       - pip install --upgrade pip
       - pip install -r requirements.txt
-      - pip install pylint  # Install pylint for code linting
+      - echo Dependencies installed
+
+  pre_build:
+    commands:
+      # Any commands you want to run before the build (e.g., setting up environment variables)
+      - echo Pre-build phase
+      - python -m pip install --upgrade setuptools wheel
 
   build:
     commands:
-      - python manage.py collectstatic --noinput
-      - python manage.py migrate
-      - echo "Running PyLint on the project..."
-      - pylint --disable=R,C invoice_pro/**/*.py || true  # Run pylint on the project, disable some message categories
+      # Commands to run during the build phase
+      - echo Building the Django app...
+      - python manage.py collectstatic --noinput  # Collect static files
+      - python manage.py migrate --noinput      # Apply migrations
+      - echo Build completed
 
   post_build:
     commands:
-      - echo "Zipping application files..."
-      - zip -r application.zip . -x "*.git*"
+      # Commands to run after the build phase (e.g., if you're preparing a deploy artifact)
+      - echo Post-build phase
+      - echo "Build phase finished successfully"
 
 artifacts:
   files:
-    - application.zip
-    - Procfile
-    - requirements.txt
-    - runtime.txt
-    - .ebextensions/**  # Include EB config if present
+    - '**/*'  # All files in the repo should be part of the artifact
+
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
