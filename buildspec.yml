@@ -24,8 +24,8 @@ phases:
       - echo Building the Django app...
       - python manage.py collectstatic --noinput  # Collect static files
       - python manage.py migrate --noinput      # Apply migrations
-      - echo Running pylint...
-      - pylint PALNATI_S_CDOS/ > pylint-report.txt || true
+      - echo "Running pylint on jobportal and jobs modules..."
+      - pylint jobportal/ jobs/ > pylint-report.txt || true
       - echo Build completed
 
   post_build:
