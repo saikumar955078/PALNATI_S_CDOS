@@ -10,6 +10,7 @@ phases:
       - pip install --upgrade pip
       - pip install -r requirements.txt
       - echo Dependencies installed
+      - pip install pylint
 
   pre_build:
     commands:
@@ -23,6 +24,8 @@ phases:
       - echo Building the Django app...
       - python manage.py collectstatic --noinput  # Collect static files
       - python manage.py migrate --noinput      # Apply migrations
+      - echo Running pylint...
+      - pylint PALNATI_S_CDOS/ > pylint-report.txt || true
       - echo Build completed
 
   post_build:
@@ -34,6 +37,7 @@ phases:
 artifacts:
   files:
     - '**/*'  # All files in the repo should be part of the artifact
+    - pylint-report.txt
 
 cache:
   paths:
