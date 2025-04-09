@@ -5,7 +5,6 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
-      # Install dependencies for your build
       - echo Installing dependencies...
       - pip install --upgrade pip
       - pip install -r requirements.txt
@@ -15,32 +14,31 @@ phases:
 
   pre_build:
     commands:
-      # Any commands you want to run before the build (e.g., setting up environment variables)
       - echo Pre-build phase
       - python -m pip install --upgrade setuptools wheel
 
   build:
     commands:
-      # Commands to run during the build phase
+
       - echo Building the Django app...
-      - python manage.py collectstatic --noinput  # Collect static files
-      - python manage.py migrate --noinput      # Apply migrations
+      - python manage.py collectstatic --noinput  
+      - python manage.py migrate --noinput      
       - echo "Running pylint on jobportal and jobs modules..."
       - pylint jobportal/ jobs/ > pylint-report.txt || true
       - echo Build completed
-      - zip -r app.zip .
+      - zip -r build-package.zip .
 
   post_build:
     commands:
-      # Commands to run after the build phase (e.g., if you're preparing a deploy artifact)
+   
+      - aws s3 cp build-package.zip s3://your-s3-bucket/path/to/your-package.zip
       - echo Post-build phase
       - echo "Build phase finished successfully"
 
 artifacts:
   files:
-    - '**/*'  # All files in the repo should be part of the artifact
+    - '**/*'  
     - pylint-report.txt
-    - app.zip
 
 cache:
   paths:
